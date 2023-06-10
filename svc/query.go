@@ -22,6 +22,18 @@ func (s *ExecutorService) QueryMessage(messageId string) (record *models.Executi
 	return
 }
 
+func (s *ExecutorService) QueryMessageBySourceTxHash(srcTxHash string) (record *models.ExecutionRecord, msg *msgtypes.Message, err error) {
+	if srcTxHash == "" {
+		return nil, nil, fmt.Errorf("srcTxHash is required")
+	}
+	record = s.db.GetExecutionRecordBySourceTxHash(srcTxHash)
+	msg, err = s.sgn.GetMessage(fmt.Sprintf("%v", record.ID))
+	if err != nil {
+		log.Warnf("cannot query message from SGN: %s", err.Error())
+	}
+	return
+}
+
 func (s *ExecutorService) QueryExecutionRecord(query *dal.ExecutionRecordQuery) (*models.ExecutionRecord, error) {
 	return s.db.GetExecutionRecord(query)
 }

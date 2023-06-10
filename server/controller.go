@@ -12,14 +12,24 @@ import (
 )
 
 func (s *RestServer) handleGetMessage(r *models.GetMessageRequest) (*models.GetMessageResponse, error) {
-	if r.ID == "" {
+	if r.ID == "" && r.SourceTxHash == "" {
 		return nil, fmt.Errorf("param messageId is required")
 	}
-	record, msg, _ := s.executorSvc.QueryMessage(r.ID)
-	return &models.GetMessageResponse{
-		ExecutionRecord: record,
-		Message:         msg,
-	}, nil
+	if r.ID == "" {
+		record, msg, _ := s.executorSvc.QueryMessageBySourceTxHash(r.SourceTxHash)
+
+		return &models.GetMessageResponse{
+			ExecutionRecord: record,
+			Message:         msg,
+		}, nil
+	} else {
+		record, msg, _ := s.executorSvc.QueryMessage(r.ID)
+
+		return &models.GetMessageResponse{
+			ExecutionRecord: record,
+			Message:         msg,
+		}, nil
+	}
 }
 
 func (s *RestServer) handleUnstuckTx(r *models.UnstuckTxRequest) (*models.UnstuckTxResponse, error) {

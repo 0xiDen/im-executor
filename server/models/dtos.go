@@ -12,7 +12,8 @@ type ServerResponse[T any] struct {
 }
 
 type GetMessageRequest struct {
-	ID string `json:"id"`
+	ID           string `json:"id"`
+	SourceTxHash string `json:"srcTx"`
 }
 
 type GetMessageResponse struct {

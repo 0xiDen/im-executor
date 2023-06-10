@@ -82,6 +82,18 @@ func (db *DB) GetExecutionRecords(q *ExecutionRecordsQuery) ([]*models.Execution
 	return records, nil
 }
 
+func (db *DB) GetExecutionRecordBySourceTxHash(src_tx string) *models.ExecutionRecord {
+	record := &models.ExecutionRecord{}
+	q := fmt.Sprintf(`SELECT %s FROM execution_context WHERE src_tx = $1`, record.Columns())
+	row := db.Db.QueryRow(q, src_tx)
+	err := record.Scan(row)
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+	return record
+}
+
 func (db *DB) GetExecutionRecordByID(id []byte) *models.ExecutionRecord {
 	record := &models.ExecutionRecord{}
 	q := fmt.Sprintf(`SELECT %s FROM execution_context WHERE id = $1`, record.Columns())
